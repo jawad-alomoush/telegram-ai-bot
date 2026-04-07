@@ -1,0 +1,133 @@
+{
+  "name": "Telegram AI Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "29e67af1-b741-417d-a411-9379a333ca42",
+      "name": "Telegram Trigger",
+      "webhookId": "07301590-eb6d-4f1e-a107-a1424abe3360",
+      "credentials": {
+        "telegramApi": {
+          "id": "BvKGiHVs7be4zOxs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful and friendly AI assistant.\nAnswer the following message clearly and concisely.\nIf the message is in Arabic, reply in Arabic.\nIf the message is in English, reply in English.\n\nUser message: {{ $('Telegram Trigger').item.json.message.text }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2c3d0b77-2368-40b9-b0dd-a5e1f60dd382",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "1c9076aa-c042-424d-a6a5-52eeeb5c4a8d",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "UR0gZstWY9NIeVAY",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "43b32940-bbd2-4319-8268-96b663cf196b",
+      "name": "Send a text message",
+      "webhookId": "a2d371a5-164d-49f2-b267-33e0bb7a9f17",
+      "credentials": {
+        "telegramApi": {
+          "id": "BvKGiHVs7be4zOxs",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3ba722fe-b447-4ebe-9ddd-df6ce1295f53",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d323daa480d56855857820a930cb5ca45702e237a3dec5df6894e811222aa17"
+  },
+  "id": "KriXUbl4xPO5Pfqo",
+  "tags": []
+}
